@@ -1,0 +1,40 @@
+// Psuedocode for plagiarism checker tool 
+// Algo used ( Rabin-Karp ) ++ (Longest Common Subsequence)
+// Project ID CS311-PID19
+
+
+• Longest Common Subsequence Algorithm
+
+Plagarise_seq(X, Y)
+   m, n:= X.length, Y.length
+   b(1..m, 1..n)
+   c(0..m, 0..n) := (others => (others => 0))
+ 
+   for i in 1 .. m loop
+       for j in 1 .. n loop
+           if xi = yj
+               c(i, j) := c(i-1, j-1) + 1
+               b(i, j) := "NW"
+           else
+               if c(i-1, j) ≥ c(i, j-1) then
+                   c(i, j) := c(i-1, j)
+                   b(i, j) := "N"
+               else
+                   c(i, j) := c(i, j-1)
+                   b(i, j) := "W"
+               end if
+           end if
+       end loop
+   end loop
+ 
+• Plag_text(b, X, i, j)
+       if i >  0 and j >  0 then
+       if b(i, j) = "NW" then
+           print-LCS(b, X, i-1, j-1)
+           print xi
+       elseif b(i, j) = "N" then
+           print-LCS(b, X, i-1, j)
+       else
+           print-LCS(b, X, i, j-1)
+       end if
+   end if
