@@ -1,0 +1,31 @@
+// Psuedocode for plagiarism checker tool 
+// Algo used ( Rabin-Karp ) ++ (Longest Common Subsequence)
+// Project ID CS311-PID19
+
+
+Begin
+   patLen := pattern Length
+   strLen := string Length
+   patHash := 0 and strHash := 0, h := 1
+   maxChar := total number of characters in character set
+   for index i of all character in pattern, do
+      h := (h*maxChar) mod prime
+   done
+   for all character index i of pattern, do
+      patHash := (maxChar*patHash + pattern[i]) mod prime
+      strHash := (maxChar*strHash + text[i]) mod prime
+   done
+   for i:= 0 to (strLen - patLen), do
+      if patHash = strHash, then
+         for charIndex := 0 to patLen -1, do
+            if text[i+charIndex] ≠ pattern[charIndex], then
+               break the loop
+         done
+         if charIndex = patLen, then
+            print the location i as pattern found at i position.
+      if i < (strLen - patLen), then
+         strHash := (maxChar*(strHash – text[i]*h) +text[i+patLen]) mod prime, then
+      if strHash < 0, then
+         strHash := strHash + prime
+   done
+End
