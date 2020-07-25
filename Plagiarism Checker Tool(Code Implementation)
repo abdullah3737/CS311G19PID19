@@ -1,0 +1,489 @@
+//Complete Implementation
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<algorithm>
+#include<process.h>
+
+//char file1[100];
+//char file2[100];
+int wordline1 = 0;
+int maxcol1=0;
+char **data1 = NULL;
+
+int wordline2 = 0;
+int maxcol2=0;
+char **data2 = NULL;
+
+char *matrix1 = NULL;
+char *matrix2 = NULL;
+int wordlen1 = 0, wordlen2 = 0;
+
+void readFile1()
+{
+	wordline1 = 0;
+	maxcol1 = 0;
+	int maxstring = 0;
+	char read[1000];
+	
+	FILE *read1 = fopen("file1.txt", "r");
+	if(read1 != NULL)
+	{
+		while(!feof(read1))
+		{
+			fscanf(read1, "%[^\n]\n", read);
+	     	wordline1++;
+			
+			//hitung total string
+			maxstring += strlen(read);
+			
+			//cek jumlah kolom di file
+			maxcol1 = std::max(maxstring,maxcol1);
+		}
+	}
+	else
+	{
+		printf("Failed file1 \n");
+	}
+	
+	fclose(read1);
+	
+	//char array dinamis nampung data file(line+kolom)
+	data1 = new char *[wordline1];
+	
+	for(int i = 0;i < wordline1;i++)
+	{
+		data1[i] = new char[maxcol1];
+	}
+	
+	int idx = 0;
+	FILE *read1a = fopen("file1.txt", "r");
+	if(read1a != NULL)
+	{
+		while(!feof(read1a))
+		{
+			fscanf(read1a, "%[^\n]\n", data1[idx]);
+			idx++;
+		}
+	}
+	else
+	{
+		printf("Failed to read file1 \n");
+	}
+ 	
+	fclose(read1a);
+
+}
+
+void readFile2()
+{
+	wordline2 = 0;
+	maxcol2 = 0;
+	int maxstring = 0;
+	char read[1000];
+
+	FILE *read2 = fopen("file2.txt", "r");
+	if(read2 != NULL)
+	{
+		while(!feof(read2))
+		{
+			fscanf(read2, "%[^\n]\n", read);
+			wordline2++;		
+			maxstring += strlen(read);
+			//cek panjang kolom di file
+			maxcol2 = std::max(maxstring,maxcol2);
+		}
+	}
+	else
+	{
+		printf("Failed to read file2 \n");
+	}
+	
+	fclose(read2);
+
+	//char array dinamis,nampung data file(line+kolom)
+	data2 = new char *[wordline2];
+	for(int i = 0;i < wordline2;i++)
+	{
+		data2[i] = new char[maxcol2];
+	}
+	int idx = 0;
+	FILE *read2a = fopen("file2.txt", "r");
+	if(read2a != NULL)
+	{
+		while(!feof(read2a))
+		{
+			fscanf(read2a, "%[^\n]\n", data2[idx]);
+			idx++;
+		}
+	}
+	else
+	{
+		printf("Failed to read file2 \n");
+	}
+	
+	fclose(read2a);
+
+}
+
+void lcs(char *var1, char *var2)
+{
+	int matrix[100][100];
+	float equi = 0;
+	float perc = 0;
+	//Computing value by optimal solution[Table]
+	for (int i=0; i<=strlen(var1); i++)
+	{
+		for (int j=0; j<=strlen(var2); j++)
+		{
+			//1st row and 1st column
+			if (i == 0 || j == 0)
+				matrix[i][j] = 0;
+			//Adding 1 in diagonal value if the var1 and var2 equal
+			else if (var1[i-1] == var2[j-1])
+				matrix[i][j] = matrix[i-1][j-1] + 1;
+
+			//if the var1 and var2 are not equal get a larger number from a prev row or column
+			else
+			{
+				matrix[i][j] = std::max(matrix[i-1][j], matrix[i][j-1]);
+			}
+		}
+	}
+
+	//Assign maximum number in table to the index
+	int index = matrix[strlen(var1)][strlen(var2)];
+	char lcs[100];
+
+	lcs[index] = '\0';
+	
+	int i = strlen(var1), j = strlen(var2);
+	//logic lcs
+	while (i > 0 && j > 0)
+	{
+	//When variable1 and var2 have same number put it in lCS array
+      if (var1[i-1] == var2[j-1])
+	  {
+		  equi+=1;
+		  /*if strlen(var2)==strlen*/
+          lcs[index-1] = var1[i-1];
+          i--;
+		  j--;
+		  index--; 
+      }
+	  //if var1 and var2 are not equal move towards the index in table which have maximum number 
+      else if (matrix[i-1][j] > matrix[i][j-1]) 
+	    i--;
+	  else
+	    j--;
+   }
+    //If the string in empty
+	if(strlen(lcs) == 0)
+	{
+		strcpy(lcs, "EMPTY STRING");
+	}
+    //Check the percentage of plagiarism
+	if(strlen(var1) > strlen(var2))
+		perc = (equi/strlen(var1))*100;
+ 	else if(strlen(var2) > strlen(var1))
+		perc = (equi/strlen(var2))*100;
+	else
+		perc = equi/strlen(var1)*100;
+
+	char sign = '%';
+	if (strlen(lcs)==strlen(var1))
+	{
+	printf("===========================================================================\n");
+	printf("\nString 1 = %s\n\nString 2 = %s\n\n\nLCS  = %s\n\n", var1, var2, lcs);
+	printf("Percentage of Plagiarism found is = %.1f %c", perc, sign);
+	}
+	//Print all the values
+    else{
+    	printf("Plagiarism found is 0 %");
+	}
+
+
+}
+ 
+
+void banding()
+{
+	float equiword = 0;
+	float perc = 0;
+	//hitungpanjang baris+kolom file
+	for(int i = 0; i < wordline1;i++)
+	{
+		wordlen1 += strlen(data1[i]);
+		wordlen1++;
+	}
+	for(int i = 0; i < wordline2;i++)
+	{
+		wordlen2 += strlen(data2[i]);
+		wordlen2++;
+	}
+
+	//masukin ke matrix1 semua data di file1
+	int index = 0;
+	matrix1 = new char [wordlen1];
+	for(int i=0;i<wordline1;i++)
+	{
+		for(int y=0;y<strlen(data1[i]);y++)
+		{
+			matrix1[index] = data1[i][y];
+			index++;
+		}
+		matrix1[index] = '\n';
+		index++;
+	}
+	//masukin ke matrix2 semua data di file2
+	index = 0;
+	matrix2 = new char [wordlen2];
+	for(int i=0;i<wordline2;i++)
+	{
+		for(int y=0;y<strlen(data2[i]);y++)
+		{
+			matrix2[index] = data2[i][y];
+			index++;
+		}
+		matrix2[index] = '\n';
+		index++;
+	}
+	/*int p1, p2;
+	p1 = strlen(file1);
+	p2 = strlen(file2);*/
+
+	//int matrix[100][100];
+
+	//matrix utk map (dinamis array)
+	int **matrix = new int *[wordlen1+1];
+	for(int i = 0;i < wordlen1+1;i++)
+	{
+		matrix[i] = new int[wordlen2];
+	}
+
+	//matrix[0][0] = 0;
+	//map lcs
+	for(int i = 0; i <= wordlen1; i++)
+	{
+		for(int j = 0; j <= wordlen2; j++)
+		{
+			//kasih yg dipinggir 0
+			if(i == 0||j==0)
+			{
+			 matrix[i][j] = 0;
+			}
+			//kalau sama kasih 1+nilai di pojok kiri atasnya
+			else if(matrix1[i-1] == matrix2[j-1])
+			{
+				matrix[i][j] = 1+matrix[i-1][j-1];
+			}
+			//kalau beda, ambil nilai terbesar (kiri atau atas)
+			else
+			{
+				matrix[i][j] = std::max(matrix[i-1][j], matrix[i][j-1]);
+			}
+		}
+	}
+	//mulai dari index yg terakhir
+	int idx = matrix[wordlen1][wordlen2];
+	//variabel lcs dinamis
+	char *lcs = new char[std::max(wordlen1,wordlen2)];
+	lcs[idx]= '\0';
+	//logic lcs
+	while(wordlen1 > 0 && wordlen2 > 0)
+	{
+		//masukin ke lcs kalau sama
+		if(matrix1[wordlen1-1] == matrix2[wordlen2-1])
+		{
+			lcs[idx-1] = matrix1[wordlen1-1];
+			equiword+=1;
+			wordlen1--;
+			wordlen2--;
+			idx--;
+		}
+		//kalau beda, (bandingin atas & kiri), pindahin ke atas
+		else if(matrix[wordlen1-1][wordlen2] > matrix[wordlen1][wordlen2-1])
+		{
+			wordlen1--;
+		}
+		//atau kiri
+		else
+		{
+			wordlen2--;
+		}
+	}
+
+	if(strlen(lcs) == 0)
+	{
+		strcpy(lcs, "EMPTY FILE!!");
+	}
+
+	if(wordlen1 > wordlen2)
+		perc = (equiword/strlen(matrix1))*100;
+	else if(wordlen2 > wordlen1)
+		perc = (equiword/strlen(matrix2))*100;
+	else
+		perc = (equiword/strlen(matrix1))*100;
+
+	char sign = '%';
+	//printf("\nData file 1 = %s\nData file 2 = %s\n\n\nLCS nya = %s\n\n", file1, file2, lcs);
+	printf("===========================================================================\n");
+	printf("\nPercentage of Plagiarism found is = %.2f %c", perc, sign);
+}
+
+void lcs_doc(char *var1, char *var2)
+{
+	int matrix[100][100];
+	float equi = 0;
+	float perc = 0;
+	//Computing value by optimal solution[Table]
+	for (int i=0; i<=strlen(var1); i++)
+	{
+		for (int j=0; j<=strlen(var2); j++)
+		{
+			//1st row and 1st column
+			if (i == 0 || j == 0)
+				matrix[i][j] = 0;
+			//Adding 1 in diagonal value if the var1 and var2 equal
+			else if (var1[i-1] == var2[j-1])
+				matrix[i][j] = matrix[i-1][j-1] + 1;
+
+			//if the var1 and var2 are not equal get a larger number from a prev row or column
+			else
+			{
+				matrix[i][j] = std::max(matrix[i-1][j], matrix[i][j-1]);
+			}
+		}
+	}
+
+	//Assign maximum number in table to the index
+	int index = matrix[strlen(var1)][strlen(var2)];
+	char lcs[100];
+
+	lcs[index] = '\0';
+	
+	int i = strlen(var1), j = strlen(var2);
+	//logic lcs
+	while (i > 0 && j > 0)
+	{
+	//When variable1 and var2 have same number put it in lCS array
+      if (var1[i-1] == var2[j-1])
+	  {
+		  equi+=1;
+		  /*if strlen(var2)==strlen*/
+          lcs[index-1] = var1[i-1];
+          i--;
+		  j--;
+		  index--; 
+      }
+	  //if var1 and var2 are not equal move towards the index in table which have maximum number 
+      else if (matrix[i-1][j] > matrix[i][j-1]) 
+	    i--;
+	  else
+	    j--;
+   }
+    //If the string in empty
+	if(strlen(lcs) == 0)
+	{
+		strcpy(lcs, "EMPTY STRING");
+	}
+    //Check the percentage of plagiarism
+	if(strlen(var1) > strlen(var2))
+		perc = (equi/strlen(var1))*100;
+ 	else if(strlen(var2) > strlen(var1))
+		perc = (equi/strlen(var2))*100;
+	else
+		perc = equi/strlen(var1)*100;
+
+	char sign = '%';
+	if (strlen(lcs)==strlen(var1))
+	{
+	printf("===========================================================================\n");
+	printf("\nString 1 = %s\n\nString 2 = %s\n\n\nLCS  = %s\n\n", var1, var2, lcs);
+	printf("Percentage of Plagiarism found is = %.1f %c", perc, sign);
+	}
+	//Print all the values
+    else{
+    	printf("Plagiarism found is 0 %");
+	}
+
+
+}
+
+void space()
+{
+	for(int i = 0; i < 2; i++)
+	{
+		printf("\n");
+	}
+}
+
+int main()
+{
+	int option;
+	char var1[100];
+	char var2[100];
+	readFile1();
+	readFile2();
+
+	
+	{
+		printf("-----------------------------------------PLAGIARISM CHECKER TOOL---------------------------------------------\n");
+		repeat:
+	/*	space()*/
+		printf("                            !!!!  Find out if your Paper is Original  !!!!\n");
+		space();
+		printf("=======================================\n");
+		printf("1. Compare 2 string\n");
+		printf("2. Compare 2 C++ files\n");
+		printf("3. Compare 2 text files\n");
+		printf("4. Exit Application\n");
+		printf("\n");
+		printf("Make Your Choice----->> ");
+		scanf("%d", &option);
+		fflush(stdin);
+		switch(option)
+		{
+			case 1:
+				{
+					space();
+					printf("Input Variable 1 : ");
+					scanf("%[^\n]", var1); 
+					fflush(stdin);
+					printf("Input Variable 2 : ");
+					scanf("%[^\n]", var2); 
+					fflush(stdin);
+					printf("\n");
+					lcs(var1, var2);
+					printf("\nPress any key to continue..");
+					getchar();
+					goto repeat;
+				break;}
+			case 2:
+				{
+					/*space();*/
+					banding();
+					printf("\nPress any key to continue..");
+					getchar();
+					goto repeat;
+				break;}
+			case 3:
+				{
+					char path1,path2;
+					space();
+					printf("Input the path of text file (Plagiarised Copy)\n");
+					path1=scanf();
+					//take inputs for file path
+					printf("Input the path of text file (Original Copy)\n ");
+					// call function here file handling 
+					//call function lcs 
+					goto repeat;
+				}
+		}
+	}
+	while(option != 4);
+	space();
+	printf("*****************************Thanks For Using Our Plagiarism Application************************************");
+	getchar();
+	return 0;
+}
