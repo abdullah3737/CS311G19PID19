@@ -1,0 +1,80 @@
+// String Plagiarism function
+void lcs(char *var1, char *var2)
+{
+	int matrix[100][100];
+	float equi = 0;
+	float perc = 0;
+	//Computing value by optimal solution[Table]
+	for (int i=0; i<=strlen(var1); i++)
+	{
+		for (int j=0; j<=strlen(var2); j++)
+		{
+			//1st row and 1st column
+			if (i == 0 || j == 0)
+				matrix[i][j] = 0;
+			//Adding 1 in diagonal value if the var1 and var2 equal
+			else if (var1[i-1] == var2[j-1])
+				matrix[i][j] = matrix[i-1][j-1] + 1;
+
+			//if the var1 and var2 are not equal get a larger number from a prev row or column
+			else
+			{
+				matrix[i][j] = std::max(matrix[i-1][j], matrix[i][j-1]);
+			}
+		}
+	}
+
+	//Assign maximum number in table to the index
+	int index = matrix[strlen(var1)][strlen(var2)];
+	char lcs[100];
+
+	lcs[index] = '\0';
+	
+	int i = strlen(var1), j = strlen(var2);
+	//logic lcs
+	while (i > 0 && j > 0)
+	{
+	//When variable1 and var2 have same number put it in lCS array
+      if (var1[i-1] == var2[j-1])
+	  {
+		  equi+=1;
+		  /*if strlen(var2)==strlen*/
+          lcs[index-1] = var1[i-1];
+          i--;
+		  j--;
+		  index--; 
+      }
+	  //if var1 and var2 are not equal move towards the index in table which have maximum number 
+      else if (matrix[i-1][j] > matrix[i][j-1]) 
+	    i--;
+	  else
+	    j--;
+   }
+    //If the string in empty
+	if(strlen(lcs) == 0)
+	{
+		strcpy(lcs, "EMPTY STRING");
+	}
+    //Check the percentage of plagiarism
+	if(strlen(var1) > strlen(var2))
+		perc = (equi/strlen(var1))*100;
+ 	else if(strlen(var2) > strlen(var1))
+		perc = (equi/strlen(var2))*100;
+	else
+		perc = equi/strlen(var1)*100;
+
+	char sign = '%';
+	if (strlen(lcs)==strlen(var1))
+	{
+	printf("===========================================================================\n");
+	printf("\nString 1 = %s\n\nString 2 = %s\n\n\nLCS  = %s\n\n", var1, var2, lcs);
+	printf("Percentage of Plagiarism found is = %.1f %c", perc, sign);
+	}
+	//Print all the values
+    else{
+    	printf("Plagiarism found is 0 %");
+	}
+
+
+}
+ 
