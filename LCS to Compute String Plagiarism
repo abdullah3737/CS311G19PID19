@@ -1,80 +1,77 @@
-// String Plagiarism function
-void lcs(char *var1, char *var2)
-{
-	int matrix[100][100];
-	float equi = 0;
-	float perc = 0;
-	//Computing value by optimal solution[Table]
-	for (int i=0; i<=strlen(var1); i++)
-	{
-		for (int j=0; j<=strlen(var2); j++)
-		{
-			//1st row and 1st column
-			if (i == 0 || j == 0)
-				matrix[i][j] = 0;
-			//Adding 1 in diagonal value if the var1 and var2 equal
-			else if (var1[i-1] == var2[j-1])
-				matrix[i][j] = matrix[i-1][j-1] + 1;
-
-			//if the var1 and var2 are not equal get a larger number from a prev row or column
-			else
-			{
-				matrix[i][j] = std::max(matrix[i-1][j], matrix[i][j-1]);
-			}
-		}
-	}
-
-	//Assign maximum number in table to the index
-	int index = matrix[strlen(var1)][strlen(var2)];
-	char lcs[100];
-
-	lcs[index] = '\0';
-	
-	int i = strlen(var1), j = strlen(var2);
-	//logic lcs
-	while (i > 0 && j > 0)
-	{
-	//When variable1 and var2 have same number put it in lCS array
-      if (var1[i-1] == var2[j-1])
-	  {
-		  equi+=1;
-		  /*if strlen(var2)==strlen*/
-          lcs[index-1] = var1[i-1];
-          i--;
-		  j--;
-		  index--; 
-      }
-	  //if var1 and var2 are not equal move towards the index in table which have maximum number 
-      else if (matrix[i-1][j] > matrix[i][j-1]) 
-	    i--;
-	  else
-	    j--;
-   }
-    //If the string in empty
-	if(strlen(lcs) == 0)
-	{
-		strcpy(lcs, "EMPTY STRING");
-	}
-    //Check the percentage of plagiarism
-	if(strlen(var1) > strlen(var2))
-		perc = (equi/strlen(var1))*100;
- 	else if(strlen(var2) > strlen(var1))
-		perc = (equi/strlen(var2))*100;
-	else
-		perc = equi/strlen(var1)*100;
-
-	char sign = '%';
-	if (strlen(lcs)==strlen(var1))
-	{
-	printf("===========================================================================\n");
-	printf("\nString 1 = %s\n\nString 2 = %s\n\n\nLCS  = %s\n\n", var1, var2, lcs);
-	printf("Percentage of Plagiarism found is = %.1f %c", perc, sign);
-	}
-	//Print all the values
-    else{
-    	printf("Plagiarism found is 0 %");
-	}
+ //  Plagiarism Checker Tool
+ // String Plagiarism detector
+ // Abdullah/Dev
+ static void lcs_string(String C, String D, int m1, int m2)
+        {
+            int[,] lc = new int[m1 + 1, m2 + 1];
 
 
-}
- 
+            for (int i = 0; i <= m1; i++)
+            {
+                for (int j = 0; j <= m2; j++)
+                {
+                    if (i == 0 || j == 0)
+                        lc[i, j] = 0;
+                    else if (C[i - 1] == D[j - 1])
+                        lc[i, j] = lc[i - 1, j - 1] + 1;
+                    else
+                        lc[i, j] = Math.Max(lc[i - 1, j], lc[i, j - 1]);
+                }
+            }
+
+            // Following code is used to print LCS 
+            int idx = lc[m1, m2];
+            int p = idx;
+
+            // Create a character array  
+            // to store the lcs string 
+            char[] final_lcs = new char[idx + 1];
+
+            // Set the terminating character 
+            final_lcs[idx] = '\0';
+
+            // Start from the right-most-bottom-most corner 
+            // and one by one store characters in lcs[] 
+            int c = m1, t = m2;
+            while (c > 0 && t > 0)
+            {
+                // If current character in X[] and Y  
+                // are same, then current character  
+                // is part of LCS 
+                if (C[c - 1] == D[t - 1])
+                {
+                    // Put current character in result 
+                    final_lcs[idx - 1] = C[c - 1];
+
+                    // reduce values of i, j and index 
+                    c--;
+                    t--;
+                    idx--;
+                }
+
+                // If not same, then find the larger of two and 
+                // go in the direction of larger value 
+                else if (lc[c - 1, t] > lc[c, t - 1])
+                    c--;
+                else
+                    t--;
+            }
+
+            // Print the lcs 
+            if (p == C.Length)
+            {
+                Console.Write(" String1: " + C + Environment.NewLine);
+                Console.Write(" String2: " + D + Environment.NewLine);
+                Console.Write(" Computed LCS = ");
+                for (int r = 0; r <= p; r++)
+                {
+                    Console.Write(final_lcs[r]);
+                }
+                Console.Write(Environment.NewLine);
+                Console.Write(" Percentage of Plagiarism found is 100 %" + Environment.NewLine);
+            }
+            else
+            {
+                Console.Write(" Percentage of Plagiarism found is 0 %");
+            }
+        }
