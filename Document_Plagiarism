@@ -1,0 +1,62 @@
+ static void plag_doc(string path1, string path2,string filename1,string filename2)
+        {
+            // File Reading 1
+            string[] data1 = new string[100];
+            int z = 0;
+            int count1 = 0;
+            // Open the text file using a stream reader.
+            using (StreamReader sr = new StreamReader(@path1))
+            {
+
+                // Read the stream to a string, and write the string to the console.
+                String line = sr.ReadToEnd();
+
+                string[] sentences = line.Split('.');
+
+                using (StreamWriter newFile = new StreamWriter(filename1))
+
+                    for (int i = 0; i < sentences.Length; i++)
+                    {
+                        if (sentences[i].Length != 0)
+                        {
+                            string outString = sentences[i].Trim() + ".";
+                            newFile.WriteLine(outString);
+                            data1[z] = outString;
+                            Console.WriteLine(data1[z]);
+                            z++;
+                            count1++;
+                        }
+                    }
+            }
+            //File Reading 2
+            string[] data2 = new string[100];
+            int y = 0;
+            int count2 = 0;
+            // Open the text file using a stream reader.
+            using (StreamReader sr = new StreamReader(@path2))
+            {
+
+                // Read the stream to a string, and write the string to the console.
+                String line = sr.ReadToEnd();
+
+                string[] sentences = line.Split('.');
+
+                using (StreamWriter newFile = new StreamWriter(filename2))
+
+                    for (int i = 0; i < sentences.Length; i++)
+                    {
+                        if (sentences[i].Length != 0)
+                        {
+                            string outString = sentences[i].Trim() + ".";
+                            newFile.WriteLine(outString);
+                            data2[z] = outString;
+                            Console.WriteLine(data2[z]);
+                            y++;
+                            count2++;
+                        }
+                    }
+            }
+
+
+        }
+       
